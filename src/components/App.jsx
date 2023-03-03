@@ -3,14 +3,14 @@ import { Title } from './Title/Title';
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactsList } from './ContactsList/ContactsList';
-// import { fetchContacts } from 'redux/contacts/operations';
-// import { useEffect } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectError, selectIsLoading } from 'redux/contacts/selectors';
 import { Loader } from './Loader/Loader';
 import { Toaster } from 'react-hot-toast';
 import { AppBar } from './AppBar/AppBar';
+import { refreshUser } from 'redux/auth/operations';
+import { fetchContacts } from 'redux/contacts/operations';
 
 const TITLES = {
   form: 'Phonebook',
@@ -20,11 +20,12 @@ const TITLES = {
 export const App = () => {
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(fetchContacts());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(refreshUser());
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <>
