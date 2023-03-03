@@ -3,8 +3,8 @@ import { Formik } from 'formik';
 import { StyledForm, Label, Input, Error, Button } from './ContactForm.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-hot-toast';
-import { selectContacts } from 'redux/selectors';
-import { addContact } from 'redux/operations';
+import { selectContacts } from 'redux/contacts/selectors';
+import { addContact } from 'redux/contacts/operations';
 
 let schema = yup.object().shape({
   name: yup
