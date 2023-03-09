@@ -3,8 +3,9 @@ import { Button, Error } from 'components/ContactForm/ContactForm.styled';
 import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import { toast } from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { editContact } from 'redux/contacts/operations';
+import { selectContacts } from 'redux/contacts/selectors';
 import { contactSchema } from 'utils/schemas';
 import {
   CloseButton,
@@ -15,8 +16,17 @@ import {
 
 export const ContactEditForm = ({ defaultValues, toastId, toggleDisabled }) => {
   const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
 
   const handleToastSubmit = values => {
+    if (
+      contacts.some(
+        contact => contact.name === values.name && contact.id !== values.id
+      )
+    ) {
+      toast.error(`Sorry, ${values.name} is already in contacts.`);
+      return;
+    }
     if (
       values.name === defaultValues.name &&
       values.number === defaultValues.number
