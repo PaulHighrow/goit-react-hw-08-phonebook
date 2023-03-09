@@ -4,8 +4,3 @@ export const ROUTES = {
   REGISTER: '/register',
   CONTACTS: '/contacts',
 };
-
-export const GREETINGS = {
-  loggedIn: 'Nice to see you',
-  notLoggedIn: 'Please, Log In',
-};
