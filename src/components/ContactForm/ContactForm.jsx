@@ -1,28 +1,10 @@
-import * as yup from 'yup';
 import { Formik } from 'formik';
-import { StyledForm, Label, Input, Error, Button } from './ContactForm.styled';
-import { useDispatch, useSelector } from 'react-redux';
+import { useContacts } from 'hooks/useContacts';
 import { toast } from 'react-hot-toast';
-import { selectContacts } from 'redux/contacts/selectors';
+import { useDispatch } from 'react-redux';
 import { addContact } from 'redux/contacts/operations';
-
-let schema = yup.object().shape({
-  name: yup
-    .string()
-    .min(3, 'Name is too short!')
-    .matches(
-      /^[A-Za-zА-Яа-яёЁ]+(?:[-'\s][A-Za-zА-Яа-яёЁ]+)*$/,
-      'Name must not contain digits'
-    )
-    .required('Name is required!'),
-  number: yup
-    .string()
-    .matches(
-      /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/,
-      'Please enter a valid number!'
-    )
-    .required('Number is required!'),
-});
+import { contactSchema } from 'utils/schemas';
+import { Button, Error, Input, Label, StyledForm } from './ContactForm.styled';
 
 const initialValues = {
   name: '',
@@ -31,7 +13,7 @@ const initialValues = {
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
+  const { contacts } = useContacts();
 
   const handleSubmit = (values, { resetForm }) => {
     if (contacts.some(contact => contact.name === values.name)) {
@@ -47,7 +29,7 @@ export const ContactForm = () => {
     <Formik
       initialValues={initialValues}
       onSubmit={handleSubmit}
-      validationSchema={schema}
+      validationSchema={contactSchema}
     >
       <StyledForm>
         <Label>

@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 axios.defaults.baseURL = 'https://connections-api.herokuapp.com';
 
@@ -17,6 +18,9 @@ export const register = createAsyncThunk(
       setAuthToken(resp.data.token);
       return resp.data;
     } catch (e) {
+      toast.error(
+        'Something went wrong! Please try again later or with different credentials!'
+      );
       return thunkAPI.rejectWithValue(e.message);
     }
   }
@@ -30,6 +34,7 @@ export const logIn = createAsyncThunk(
       setAuthToken(resp.data.token);
       return resp.data;
     } catch (e) {
+      toast.error('Email or password is incorrect!');
       return thunkAPI.rejectWithValue(e.message);
     }
   }
@@ -49,11 +54,8 @@ export const refreshUser = createAsyncThunk(
   async (_, thunkAPI) => {
     const state = thunkAPI.getState();
     const persistedToken = state.auth.token;
-    console.log(state);
-    console.log(persistedToken);
 
     if (!persistedToken) {
-      console.log('no token');
       return thunkAPI.rejectWithValue('Unable to fetch user');
     }
 

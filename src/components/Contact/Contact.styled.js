@@ -1,4 +1,4 @@
-import { Field, Form } from 'formik';
+import { AiTwotoneDelete, AiTwotoneEdit } from 'react-icons/ai';
 import styled from 'styled-components';
 
 export const Text = styled.p`
@@ -6,34 +6,37 @@ export const Text = styled.p`
   line-height: 1.2;
 `;
 
-export const Button = styled.button`
-  padding: 5px;
-  font-size: 14px;
+export const ButtonBox = styled.div`
+  display: flex;
+  gap: 16px;
+`;
 
-  border: 1px solid #b5b5b5;
-  border-radius: 5px;
-  background-color: #d5e3e1;
+export const IconButton = styled.button`
+  display: flex;
+  justify-content: center;
+
+  border: none;
+  background-color: transparent;
+  color: #4682b4;
   transition: var(--animation-global);
+
+  width: 24px;
+  padding: 2px;
 
   &:hover,
   &:focus,
   &:active {
-    background-color: #f3f5ce;
+    color: #000080;
+    filter: drop-shadow(var(--shadow-global));
   }
 `;
 
-export const ToastForm = styled(Form)`
-  display: flex;
-  flex-direction: column;
-
-  gap: 8px;
+export const EditIcon = styled(AiTwotoneEdit)`
+  width: 24px;
+  height: 24px;
 `;
 
-export const ToastInput = styled(Field)`
-  font-size: 16px;
-  line-height: 1.4;
-
-  padding: 4px;
-  border: 1px solid #cccaca;
-  border-radius: 5px;
+export const DeleteIcon = styled(AiTwotoneDelete)`
+  width: 24px;
+  height: 24px;
 `;

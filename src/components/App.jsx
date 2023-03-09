@@ -1,44 +1,60 @@
-import { Box } from './Box/Box.styled';
-import { Title } from './Title/Title';
-import { ContactForm } from './ContactForm/ContactForm';
-import { Filter } from './Filter/Filter';
-import { ContactsList } from './ContactsList/ContactsList';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectError, selectIsLoading } from 'redux/contacts/selectors';
-import { Loader } from './Loader/Loader';
-import { Toaster } from 'react-hot-toast';
-import { AppBar } from './AppBar/AppBar';
+// import { Title } from './Title/Title';
+import { lazy, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
 import { refreshUser } from 'redux/auth/operations';
-import { fetchContacts } from 'redux/contacts/operations';
+import { ROUTES } from 'utils/routes';
+import { PrivateRoute } from './PrivateRoute';
+import { RestrictedRoute } from './RestrictedRoute';
+import { SharedLayout } from './SharedLayout/SharedLayout';
 
-const TITLES = {
-  form: 'Phonebook',
-  contacts: 'Contacts',
-};
+const HomePage = lazy(() =>
+  import(/* webpackChunkName: "Homepage" */ '../pages/Home/Home')
+);
+const RegisterPage = lazy(() =>
+  import(/* webpackChunkName: "Register" */ '../pages/Register/Register')
+);
+const LoginPage = lazy(() =>
+  import(/* webpackChunkName: "Login" */ '../pages/Login/Login')
+);
+const ContactsPage = lazy(() =>
+  import(/* webpackChunkName: "Contacts" */ '../pages/Contacts/Contacts')
+);
+const NotFound = lazy(() =>
+  import(/* webpackChunkName: "Not Found" */ '../pages/NotFound/NotFound')
+);
 
 export const App = () => {
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(refreshUser());
-    dispatch(fetchContacts());
   }, [dispatch]);
 
   return (
-    <>
-      <AppBar />
-      <Box>
-        <Title title={TITLES.form} />
-        <ContactForm />
-        <Title title={TITLES.contacts} />
-        <Filter />
-        {isLoading && !error && <Loader />}
-        <ContactsList />
-        <Toaster />
-      </Box>
-    </>
+    <Routes>
+      <Route path={ROUTES.HOME} element={<SharedLayout />}>
+        <Route index element={<HomePage />} />
+        <Route
+          path={ROUTES.REGISTER}
+          element={<RestrictedRoute component={<RegisterPage />} />}
+        />
+        <Route
+          path={ROUTES.LOGIN}
+          element={<RestrictedRoute component={<LoginPage />} />}
+        />
+
+        <Route
+          path={ROUTES.CONTACTS}
+          element={
+            <PrivateRoute
+              redirectTo={ROUTES.LOGIN}
+              component={<ContactsPage />}
+            />
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
 };

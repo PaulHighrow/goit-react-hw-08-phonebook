@@ -1,69 +1,41 @@
+import { ContactEditForm } from 'components/ContactEditForm/ContactEditForm';
 import PropTypes from 'prop-types';
-import * as yup from 'yup';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { deleteContact, editContact } from 'redux/contacts/operations';
-import { Text, Button, ToastForm, ToastInput } from './Contact.styled';
-import { Formik } from 'formik';
-import { Error } from 'components/ContactForm/ContactForm.styled';
-
-let schema = yup.object().shape({
-  name: yup
-    .string()
-    .min(3, 'Name is too short!')
-    .matches(
-      /^[A-Za-zА-Яа-яёЁ]+(?:[-'\s][A-Za-zА-Яа-яёЁ]+)*$/,
-      'Name must not contain digits'
-    )
-    .required('Name is required!'),
-  number: yup
-    .string()
-    .matches(
-      /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/,
-      'Please enter a valid number!'
-    )
-    .required('Number is required!'),
-});
+import { deleteContact } from 'redux/contacts/operations';
+import {
+  ButtonBox,
+  DeleteIcon,
+  EditIcon,
+  IconButton,
+  Text,
+} from './Contact.styled';
 
 export const Contact = ({ contact: { id, name, number } }) => {
   const dispatch = useDispatch();
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const toggleDisabled = value => {
+    setIsDisabled(value);
+  };
 
   const handleDelete = () => {
     dispatch(deleteContact(id));
     toast.success('Contact was deleted!');
   };
 
-  const handleToastSubmit = values => {
-    const editedValues = {
-      id: id,
-      name: values.name,
-      number: values.number,
-    };
-    dispatch(editContact(editedValues));
-    toast.dismiss();
-    toast.success('Contact successfully edited!');
-  };
-
-  const handleEdit = () => {
-    const defaultValues = { name, number };
+  const createToastForm = () => {
+    const defaultValues = { id, name, number };
 
     toast(
-      () => {
+      t => {
         return (
-          <Formik
-            initialValues={defaultValues}
-            onSubmit={handleToastSubmit}
-            validationSchema={schema}
-          >
-            <ToastForm>
-              <Text> Okay, do your edits</Text>
-              <ToastInput type="text" name="name" />
-              <Error component="div" name="name" />
-              <ToastInput type="tel" name="number" />
-              <Error component="div" name="number" />
-              <Button type="submit">Submit</Button>
-            </ToastForm>
-          </Formik>
+          <ContactEditForm
+            defaultValues={defaultValues}
+            toastId={t.id}
+            toggleDisabled={toggleDisabled}
+          />
         );
       },
       {
@@ -72,17 +44,24 @@ export const Contact = ({ contact: { id, name, number } }) => {
     );
   };
 
+  const handleEdit = () => {
+    setIsDisabled(true);
+    createToastForm();
+  };
+
   return (
     <>
       <Text>
         {name}: {number}
       </Text>
-      <Button type="button" onClick={handleDelete}>
-        Delete
-      </Button>
-      <Button type="button" onClick={handleEdit}>
-        Edit
-      </Button>
+      <ButtonBox>
+        <IconButton type="button" onClick={handleEdit} disabled={isDisabled}>
+          <EditIcon />
+        </IconButton>
+        <IconButton type="button" onClick={handleDelete}>
+          <DeleteIcon />
+        </IconButton>
+      </ButtonBox>
     </>
   );
 };
